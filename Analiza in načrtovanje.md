@@ -106,7 +106,7 @@ MESEČNI ZNESEK NAKUPOV?
     └── STATUS = bronasti ──► 10 točk
 ```
 
-## 5. Zaslonske maske (žični model / design) - Figma?
+## 5. Zaslonske maske
 
 [Zaslonske maske narejene v orodju Figma](https://www.figma.com/make/qoBau0vFBUvsg8QTCeWloy/Loyalty-Program-Web-App-UI?t=EnjvQbXlX6Pe8hvX-0&preview-route=%2Fdashboard
 )
