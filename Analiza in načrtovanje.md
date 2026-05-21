@@ -1,3 +1,5 @@
+# Analiza in načrtovanje: Program lojalnosti Maestro
+
 ## 1. Podatkovni model
 
 ![Podatkovni model](slike/podatkovni_model_sc.png)
