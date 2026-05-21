@@ -1,0 +1,7 @@
+- Podatkovni model (relacijski model je baje že dovolj)
+- Funkcionalna razgradnja-dekompozicija
+- Diagram prehajanja stanj med statusi
+- Odločilna tabel za točkovanje (imam odločitveno drevo - je ok?)
+- Zaslonske maske (žični model / design) - Figma?
+- API načrt
+- Razredni diagram - realizacija primerov uporabe, ki si jih prej podrobneje opisal)
