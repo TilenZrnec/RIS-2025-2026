@@ -225,7 +225,7 @@ Po uspešni registraciji in verifikaciji stranke naš sistem posreduje zahtevo z
 ```
 * **Opomba:** Naročilo se odda takoj po uspešni verifikaciji e-naslova. Številka sledenja se shrani v interni bazi za morebitne kasnejše reklamacije.
 
-### 3.4 Integracija s Sistemsko uro (Batch sprožilnik)
+### 6.4 Integracija s Sistemsko uro (Batch sprožilnik)
 
 Mesečni batch proces (F-09) sproži sistemska ura. Gre za interno opravilo (cron job), ki se izvede enkrat mesečno po koncu obračunskega obdobja, brez zunanjega klica.
 
