@@ -1,0 +1,3 @@
+- Diagram PU + Opisi (registracija uporabnika, pripis točk) (mas ze narejene glavne in stranske tokove za 3 random PU - a lahko za te k mam ze?)
+- Dodatne specifikacije NF
+- Slovar izrazov
