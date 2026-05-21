@@ -1,7 +1,294 @@
-- Podatkovni model (relacijski model je baje že dovolj)
-- Funkcionalna razgradnja-dekompozicija
-- Diagram prehajanja stanj med statusi
-- Odločilna tabel za točkovanje (imam odločitveno drevo - je ok?)
-- Zaslonske maske (žični model / design) - Figma?
-- API načrt
-- Razredni diagram - realizacija primerov uporabe, ki si jih prej podrobneje opisal)
+## 1. Podatkovni model
+
+![Podatkovni model](slike/podatkovni_model_sc.png)
+
+## 2. Funkcionalna dekompozicija
+
+```
+Program lojalnosti Maestro
+│
+├── 1. Upravljanje članstva in uporabniških računov
+│   ├── 1.1 Postopek registracije in včlanitve
+│   │   ├── 1.1.1 Spletna registracija stranke (F-01)
+│   │   ├── 1.1.2 Verifikacija e-naslova (F-02)
+│   │   ├── 1.1.3 Dodelitev začetnega statusa (F-04)
+│   │   └── 1.1.4 Pošiljanje kartice lojalnosti (F-05)
+│   └── 1.2 Upravljanje dostopa in profilov
+│       ├── 1.2.1 Ustvarjanje uporabniškega računa (F-03)
+│       ├── 1.2.2 Prijava v portal (F-06)
+│       ├── 1.2.3 Ponastavitev gesla (F-07)
+│       └── 1.2.4 Urejanje osebnih podatkov (F-08)
+│
+├── 2. Mesečna obdelava (Batch procesi)
+│   ├── 2.1 Pridobivanje podatkov
+│   │   └── 2.1.1 Branje nakupnih podatkov iz poslovnega IS (F-10)
+│   ├── 2.2 Avtomatizacija nivojev lojalnosti
+│   │   ├── 2.2.1 Posodobitev statusa pred točkovanjem (F-12)
+│   │   └── 2.2.2 Mesečno prehajanje med statusi (F-13)
+│   └── 2.3 Obračun točk zvestobe
+│       ├── 2.3.1 Mesečni batch izračun točk (F-09)
+│       └── 2.3.2 Dodelitev točk po točkovniku (F-11)
+│
+├── 3. Spletni portal za stranke
+│   ├── 3.1 Pregled stanja in aktivnosti
+│   │   ├── 3.1.1 Pregled zbranih točk (portal – stranka) (F-16)
+│   │   └── 3.1.2 Pregled zneskov in zgodovine nakupov (portal – stranka) (F-17)
+│   └── 3.2 Katalog in nagradni program
+│       ├── 3.2.1 Pregled nakupnega programa / kataloga nagrad (F-18)
+│       └── 3.2.2 Koriščenje točk (F-19)
+│
+└── 4. Administracijski portal
+    ├── 4.1 Upravljanje sistemskih pravil in kataloga
+    │   ├── 4.1.1 Upravljanje pravil točkovnika (admin) (F-14)
+    │   ├── 4.1.2 Upravljanje pravil prehajanja med statusi (admin) (F-15)
+    │   └── 4.1.3 Upravljanje kataloga nagrad (admin) (F-22)
+    └── 4.2 Nadzor, analitika in poizvedbe
+        ├── 4.2.1 Pregled statusov strank (admin) (F-20)
+        ├── 4.2.2 Pregled statistike nakupov (admin) (F-21)
+        └── 4.2.3 Poljubne poizvedbe po podatkovni bazi (admin) (F-23)
+```
+
+## 3. Diagram prehajanja stanj med statusi
+
+```
+ZAČETEK MESEČNEGA BATCH PROCESA (stranka X)
+│
+├── Trenutni status = OSNOVNI?
+│   └── nakup ≥ 500 EUR? ──► DA ──► STATUS = SREBRNI
+│                        └──► NE ──► ostane OSNOVNI
+│
+├── Trenutni status = SREBRNI?
+│   ├── nakup ≥ 500 EUR?
+│   │   └── DA ──► Je to že 3. mesec z nakupom > 500 EUR? ──► DA ──► STATUS = ZLATI
+│   │                                                      └──► NE ──► ostane SREBRNI
+│   └── nakup < 200 EUR?
+│       └── DA ──► Ali je to že 2. zaporedni mesec? ──► DA ──► STATUS = BRONASTI
+│                                                    └──► NE ──► ostane SREBRNI
+│
+├── Trenutni status = ZLATI?
+│   ├── nakup ≥ 500 EUR? ──► DA ──► ostane ZLATI
+│   └── nakup < 500 EUR? ──► DA ──► STATUS = SREBRNI
+│
+└── Trenutni status = BRONASTI?
+    ├── nakup < 50 EUR?  ──► DA ──► STATUS = OSNOVNI
+    └── 2 zaporedna meseca z nakupom ≥ 200 EUR? ──► DA ──► STATUS = SREBRNI
+                                                 └──► NE ──► ostane BRONASTI
+```
+
+## 4. Odločilna tabel za točkovanje
+
+> **Opomba:** Točke se dodelijo šele po morebitni spremembi statusa.
+
+```
+MESEČNI ZNESEK NAKUPOV?
+│
+├── [ do 200 EUR ]
+│   │
+│   ├── STATUS = osnovni  ──► 5 točk
+│   ├── STATUS = srebrni  ──► 7,5 točke
+│   ├── STATUS = zlati    ──► 10 točk
+│   └── STATUS = bronasti ──► 0 točk
+│
+├── [ 200 EUR – 1000 EUR ]
+│   │
+│   ├── STATUS = osnovni  ──► 10 točk
+│   ├── STATUS = srebrni  ──► 15 točk
+│   ├── STATUS = zlati    ──► 20 točk
+│   └── STATUS = bronasti ──► 5 točk
+│
+└── [ nad 1000 EUR ]
+    │
+    ├── STATUS = osnovni  ──► 20 točk
+    ├── STATUS = srebrni  ──► 30 točk
+    ├── STATUS = zlati    ──► 40 točk
+    └── STATUS = bronasti ──► 10 točk
+```
+
+## 5. Zaslonske maske (žični model / design) - Figma?
+
+[Zaslonske maske narejene v orodju Figma](https://www.figma.com/make/qoBau0vFBUvsg8QTCeWloy/Loyalty-Program-Web-App-UI?t=EnjvQbXlX6Pe8hvX-0&preview-route=%2Fdashboard
+)
+
+## 6. API načrt
+
+Vsi API-ji v tem poglavju opisujejo komunikacijo med našim sistemom in **zunanjimi sistemi**. Gre za integracijske točke, ki jih naš backend kliče kot odjemalec oziroma ki jih zunanji sistemi kličejo na našem backendu.
+
+### 6.1 Integracija s Poslovnim IS Maestro
+
+Poslovni IS Maestro je obstoječi sistem, ki hrani podatke o opravljenih nakupih strank v fizičnih in spletnih prodajalnah. Naš sistem ga kliče enkrat mesečno v sklopu batch procesa (F-09, F-10).
+
+**`GET /external/poslovni-is/api/v1/nakupi`** – Pridobitev mesečnih nakupnih podatkov za vse stranke programa lojalnosti za pretekli mesec.
+* **Query parametri:** `mesec=12&leto=2024`
+* **Response:**
+```json
+[
+  {
+    "ID_stranke_IS": "MAE-00012345",
+    "e_naslov": "janez.novak@maestro.si",
+    "mesec": 12,
+    "leto": 2024,
+    "skupni_znesek_eur": 540.50
+  },
+  {
+    "ID_stranke_IS": "MAE-00067890",
+    "e_naslov": "ana.kovac@example.com",
+    "mesec": 12,
+    "leto": 2024,
+    "skupni_znesek_eur": 1250.00
+  }
+]
+```
+
+### 6.2 Integracija z E-poštnim sistemom (SMTP / Mail API)
+
+E-poštni sistem se uporablja na dveh mestih: ob registraciji stranke za verifikacijo e-naslova (F-02) ter ob ponastavitvi gesla (F-07). Naš backend komunicira s poštnim strežnikom prek standardnega SMTP-protokola ali REST API-ja ponudnika transakcijske pošte (npr. SendGrid, Mailgun).
+
+**`POST /external/mail/api/v1/send`** – Pošiljanje verifikacijskega e-sporočila ob registraciji (F-02).
+* **Payload:**
+```json
+{
+  "from": "noreply@maestro.si",
+  "to": "janez.novak@maestro.si",
+  "subject": "Potrdite vaš e-naslov – Maestro program lojalnosti",
+  "template_id": "verifikacija_emaila",
+  "template_data": {
+    "ime": "Janez",
+    "verifikacijska_povezava": "https://lojalnost.maestro.si/verify?token=abc123xyz"
+  }
+}
+```
+
+* **Response:**
+    
+```json
+{
+  "status": "queued",
+  "message_id": "msg-789456"
+}
+```
+
+**`POST /external/mail/api/v1/send`** – Pošiljanje e-sporočila za ponastavitev gesla (F-07).
+* **Payload:**
+```json
+{
+  "from": "noreply@maestro.si",
+  "to": "janez.novak@maestro.si",
+  "subject": "Ponastavitev gesla – Maestro program lojalnosti",
+  "template_id": "ponastavitev_gesla",
+  "template_data": {
+    "ime": "Janez",
+    "povezava_za_ponastavitev": "https://lojalnost.maestro.si/reset-password?token=def456uvw"
+  }
+}
+```
+* **Response:**
+```json
+{
+  "status": "queued",
+  "message_id": "msg-789457"
+}
+```
+* **Opomba:** Veljavnost žetonov za verifikacijo in ponastavitev gesla je časovno omejena (npr. 24 ur). Žetoni so shranjeni v interni bazi do uveljavitve ali preteka.
+
+### 6.3 Integracija s Poštno / Logistično storitvijo
+
+Po uspešni registraciji in verifikaciji stranke naš sistem posreduje zahtevo za tisk in dostavo kartice lojalnosti zunanji poštni oziroma logistični storitvi (F-05).
+
+**`POST /external/posta/api/v1/narocila`** – Oddaja naročila za tisk in dostavo kartice lojalnosti (F-05).
+* **Payload:**
+```json
+{
+  "tip_posiljke": "kartica_lojalnosti",
+  "prejemnik": {
+    "ime": "Janez",
+    "priimek": "Novak",
+    "ulica": "Slovenska cesta",
+    "hisna_stevilka": "1a",
+    "postna_stevilka": "1000",
+    "kraj": "Ljubljana",
+    "drzava": "SI"
+  },
+  "podatki_kartice": {
+    "ID_stranke": 12345,
+    "nivo_lojalnosti": "osnovni"
+  },
+  "referenca": "KARTICA-MAE-12345"
+}
+```
+   * **Response:**
+```json
+{
+  "status": "sprejeto",
+  "stevilka_sledenja": "SI123456789SI",
+  "ocenjeni_datum_dostave": "2024-12-20"
+}
+```
+* **Opomba:** Naročilo se odda takoj po uspešni verifikaciji e-naslova. Številka sledenja se shrani v interni bazi za morebitne kasnejše reklamacije.
+
+### 3.4 Integracija s Sistemsko uro (Batch sprožilnik)
+
+Mesečni batch proces (F-09) sproži sistemska ura. Gre za interno opravilo (cron job), ki se izvede enkrat mesečno po koncu obračunskega obdobja, brez zunanjega klica.
+
+**Cron izraz:** `0 2 1 * *` *(vsak 1. v mesecu ob 02:00)*
+**`POST /internal/batch/izracun-tock`** – Zažene sekvenco:
+    1. Branje nakupnih podatkov iz Poslovnega IS (F-10)
+    2. Posodobitev statusov strank (F-12, F-13)
+    3. Dodelitev točk zvestobe po točkovniku (F-11)
+* **Response:**
+```json
+{
+  "status": "zakljuceno",
+  "obdelanih_strank": 523147,
+  "napak": 0,
+  "cas_izvajanja_s": 184
+}
+```
+* **Opomba:** Endpoint je dostopen izključno iz internega omrežja in ni izpostavljen javno. V primeru napake se sproži alarm na e-poštni naslov administratorjev.
+
+## 7. Razredni diagram
+
+### F-06 Prijava v portal
+
+**Podrobnejši opis toka:**
+
+| # | Osnovno besedilo | Podrobnejši opis |
+|---|---|---|
+| 3 | Uporabnik vnese e-naslov in geslo ter potrdi vnos. | Stran `PrijavaStran` zajame vrednosti iz obrazca in jih posreduje krmilniku `AvtentikacijaKrmilnik`. |
+| 4 | Sistem preveri, ali e-naslov obstaja in ali se geslo ujema. | `AvtentikacijaKrmilnik` pokliče metodo `preveriPoverilnice()`, ki poizveduje po entiteti `Stranka`. Geslo se primerja z atributom `geslo_hash`. |
+| 5 | Sistem ustvari JWT-žeton in vzpostavi sejo. | `AvtentikacijaKrmilnik` pokliče `ustvariJwtZeton()`, ki vrne podpisani žeton z `ID_stranke`, in `vzpostaviSejo()`, ki žeton shrani na odjemalcu. |
+| S2 | Sistem prikaže splošno sporočilo o napaki. | `AvtentikacijaKrmilnik` vrne kodo napake, `PrijavaStran` pokliče `prikaziNapako()`. Napaka ne razkrije, ali je bil neveljaven e-naslov ali geslo. |
+
+**Razredni diagram:**
+
+![RD](https://vip.lavbic.net/plantuml/png/XPDFQzmm4CNl_XGYlJYa6xRGKbZIXPJ-ImljWY67NXPP6c_6bZL6ajNMfT-zOpcxiUb2Bx9v6h_H-sdi6xITTB8LoaZlRqDmMFO1xXJP0WSGwymlIpwG3KNuPK2KP7IM9L7i7DOooY8uQSNDJGkrnUrMF5DGLUgr-9q9iH8TcHhUjnBDHd0bsiEJ_16yeRcyukLAT0uREU2tqia1L7wv4P5GJriKdCPxItufJrzybPriAFSTELBuPBqiXTwtuBXO3-GixGnvHIUxFyTqjp603UohEEKNrwAns73CXbauCbFKSgrVLjLZr5R-B094RhmZt_IUuaQW3UADU3KF1v6xxsXSsKL13dCwpyLXfF99-eVPyKiY0z8cXzw7A1r-_X6-Go2Requtq43gTZdZUINYq94FCc81DUN3M7yEoY1BC33WMmU39W-7vPd-OJCrb4nZH1GWJ3IggjIbVgHnzsxlP-TA6hQmd0A7B3KB3VPMCe2u41EJ_SCCIf8vMkZzVaHPJJS5v_O3gUPqYCKrf0dC_qUyXllKGI7doMUR36Jn4roykE06s_GyFpyR7c7lGFSryDjf1hBprIU_zVKrlnwnZoOunAEBWDM4hC_-0W00)
+
+### F-18 Pregled kataloga nagrad
+
+**Podrobnejši opis toka:**
+
+| # | Osnovno besedilo | Podrobnejši opis |
+|---|---|---|
+| 2 | Sistem pridobi seznam aktivnih nagrad. | `KatalogKrmilnik` pokliče metodo `pridobiAktivneNagrade()`, ki vrne vse zapise iz entitete `Nagrada` s `status_nagrade = 'aktivna'`. |
+| 3 | Sistem prikaže katalog nagrad z nazivom in ceno v točkah. | `KatalogStran` iterira po vrnjeni listi objektov `Nagrada` in za vsako prikaže `naziv`, `opis` ter `cena_v_tockah`. |
+| 4 | Sistem prikaže, ali ima uporabnik dovolj točk. | `KatalogKrmilnik` primerja `cena_v_tockah` vsake nagrade z atributom `status_tock` entitete `Stranka` in nastavi zastavico `jeDosegljiva`. |
+| S2 | Ni aktivnih nagrad v katalogu. | `KatalogKrmilnik` vrne prazno listo, `KatalogStran` pokliče `prikaziPraznoStanje()`. |
+
+**Razredni diagram:**
+
+![RD](https://vip.lavbic.net/plantuml/png/XPFRYjim48Rl_HGYlKaFkwHGA9Wbi10AIzeGIAzwOyRME3kMB1bfrj2KFaBVgWzMMNASEANqne8vwVz-ZRqYqu63LbGQl7zaTbI-C3vLrXpeX6AL-Nd99slumDyrYj9gcMKnABR0eEtnm0wCU7XeiJ6qNejN5TPrzL7yo8Iu4nvF1jeT71t8N7mcpqFuBdpUYiwHWXEDSvOc5c6gUfsBtfACTJQCKB2n7e-weHwN9EEbAjIIcPME8_SEJiOU64o3otaUIT8EjjQHht18azoTBxuQzlE6SkjQqePK05N13MTrWYrNyaDT9zY9IjgI7XLJRt2SFOWOuQE87XrDGDRpacsbS6_POMcIadSYncv8IsirWZdVr3deTOFc6-mZ-T_MV87k0fFKG810myJ82QAkIrdAySMUDeMvCYJ6JF2qpqKOJUOO8xOZFmi4Cw7eYq4pF5ywFGE_-Cl4gmuPCctHeswWDy43AcnOaGqmNiniCFa8ools2IUX_XV7NpaIOzJEbGGZGqZDOgFmWMTgJ9gEo5-7bnaa3OaWP_OhBDulGkawdhVRauiJF3Fs85JAPBSLK_Vg_lxDOdgnG8yE1QIj4gEV_-uEvzcT_BoI0rFO-B1Nlt-fx0y0)
+
+### F-20 Pregled statusov strank
+
+**Podrobnejši opis toka:**
+
+| # | Osnovno besedilo | Podrobnejši opis |
+|---|---|---|
+| 2 | Sistem prikaže filter za obdobje in status. | `StatusAdminStran` prikaži obrazec z datumskima poljema `datumOd` in `datumDo` ter spustnim menijem za `naziv_statusa`. |
+| 3 | Administrator vnese parametre in potrdi iskanje. | `StatusAdminStran` posreduje filter objektu `StatusKrmilnik` prek metode `isciStatuse()`. |
+| 4 | Sistem poizve po zgodovini statusov. | `StatusKrmilnik` pokliče `filtrirajPoObdobju()` na entiteti `Zgodovina_statusa`, ki vrne zapise, ki ustrezajo podanemu obdobju in statusu. |
+| 5 | Sistem prikaže seznam strank s podatki o statusu. | `StatusAdminStran` prikaže kombinirane podatke iz `Stranka` (ime, priimek) in `Zgodovina_statusa` (naziv_statusa, datum_od, datum_do). |
+| S2 | Ni zadetkov za izbrano obdobje. | `StatusKrmilnik` vrne prazno listo, `StatusAdminStran` pokliče `prikaziPraznoStanje()` in ohrani vrednosti filtrov. |
+
+**Razredni diagram:**
+
+![RD](https://vip.lavbic.net/plantuml/png/XLDTQzim57tthn3fYxkb9ME3WYc1G2YO5XeMs4DVWcnTXslBka6I3VFOVvzisOwTXFN57rVt79rpT6KAL2UkUSbIoOtPMAingIp4AQazDi1MWPctl92oU_jR0aj8YY3eYcnlkQtCHfIezbPpnPwVIyWLhjUCtQMGPUaJ-nCmzi0ob1RqrhMNxo9YxWCkwrkwgdl-oEsZKHtRXGVt-CfE6WlUu4lN5Dv7h2OKVeMi5XYRWgiSvYiUynEQIZfQ27N_XH5xGsDlzEuqRnGv4PTSsDJKO9YHBhaTv0qDV-VflEeIfSB2PLEu43N9Bf-xP2L-P9cFnxj2awB7G2YcIIsPc0QqP6QMoxqtq74qGbVDZbn_0Q5fpwG0lxnapP44rQXWD3p2dE6JvhNCGNtmk7KNdZeI7C1NNbtuCFNQRiMTIL0MBLXlCiiIaOX-1kBjOLI4odOrB65wlAqGLofcDJWeRYJLisANo4734LlE57CuJu-FymXsvyAckEmEhyUEYZ_wDFZ1f_cfzabyWthbXgGUy3VaqNJKVKbCfxm40-cPJeAbyS-Ro65JMAn1_NfF12Lv5T9vA7egPouXai1Lw-xgJYw-BHpRkdjVZ6JaxelH8AeS-XiNN7ICuDNZuvV5ZT2Y3gXHSyV5o8lyX6KO5gSRD30oa2XWVk0W65Ozw7yxOyc_1_y0)
