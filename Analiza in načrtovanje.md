@@ -6,105 +6,21 @@
 
 ## 2. Funkcionalna dekompozicija
 
-```
-Program lojalnosti Maestro
-│
-├── 1. Upravljanje članstva in uporabniških računov
-│   ├── 1.1 Postopek registracije in včlanitve
-│   │   ├── 1.1.1 Spletna registracija stranke (F-01)
-│   │   ├── 1.1.2 Verifikacija e-naslova (F-02)
-│   │   ├── 1.1.3 Dodelitev začetnega statusa (F-04)
-│   │   └── 1.1.4 Pošiljanje kartice lojalnosti (F-05)
-│   └── 1.2 Upravljanje dostopa in profilov
-│       ├── 1.2.1 Ustvarjanje uporabniškega računa (F-03)
-│       ├── 1.2.2 Prijava v portal (F-06)
-│       ├── 1.2.3 Ponastavitev gesla (F-07)
-│       └── 1.2.4 Urejanje osebnih podatkov (F-08)
-│
-├── 2. Mesečna obdelava (Batch procesi)
-│   ├── 2.1 Pridobivanje podatkov
-│   │   └── 2.1.1 Branje nakupnih podatkov iz poslovnega IS (F-10)
-│   ├── 2.2 Avtomatizacija nivojev lojalnosti
-│   │   ├── 2.2.1 Posodobitev statusa pred točkovanjem (F-12)
-│   │   └── 2.2.2 Mesečno prehajanje med statusi (F-13)
-│   └── 2.3 Obračun točk zvestobe
-│       ├── 2.3.1 Mesečni batch izračun točk (F-09)
-│       └── 2.3.2 Dodelitev točk po točkovniku (F-11)
-│
-├── 3. Spletni portal za stranke
-│   ├── 3.1 Pregled stanja in aktivnosti
-│   │   ├── 3.1.1 Pregled zbranih točk (portal – stranka) (F-16)
-│   │   └── 3.1.2 Pregled zneskov in zgodovine nakupov (portal – stranka) (F-17)
-│   └── 3.2 Katalog in nagradni program
-│       ├── 3.2.1 Pregled nakupnega programa / kataloga nagrad (F-18)
-│       └── 3.2.2 Koriščenje točk (F-19)
-│
-└── 4. Administracijski portal
-    ├── 4.1 Upravljanje sistemskih pravil in kataloga
-    │   ├── 4.1.1 Upravljanje pravil točkovnika (admin) (F-14)
-    │   ├── 4.1.2 Upravljanje pravil prehajanja med statusi (admin) (F-15)
-    │   └── 4.1.3 Upravljanje kataloga nagrad (admin) (F-22)
-    └── 4.2 Nadzor, analitika in poizvedbe
-        ├── 4.2.1 Pregled statusov strank (admin) (F-20)
-        ├── 4.2.2 Pregled statistike nakupov (admin) (F-21)
-        └── 4.2.3 Poljubne poizvedbe po podatkovni bazi (admin) (F-23)
-```
+![Funkcionalna dekompozicija](https://vip.lavbic.net/plantuml/png/RLL1Rjim4Bpd5Jn6GUD6bD8ajoGe2XH5sW21UorM5cFJaac1ebb0V_0ZyXVdNzqbAPbgUpFisTdPcLtwlhTWxE-gFpkxOCz6hmtiMAktq2hTMycUGFJMQFprWkKBjkmCk7OBQYlOyT22wgq39XNRTzf0fUJxMoCtpC3ni5VQOTN5BwpBsJEowKuqp8YrH4POIQJ0GkTff7M2m06D-9Uk5LP12WT67rGZsFcNowiyI_2S_HH6liecuCIbWhxLg8oGF4KMxBEkHIkjS6n0bTX4h8aPxBuF-3B5bwZy_Kt6aHlqIgv4QX1LN6VZe7pcKEs7zlvqHh_ADZWIa3Zaajmp0PiOI8A2Wq5GaILL75F26N4snx34Gkindr9CWQBH0GlEpxaMVHkORb9KoPP6XEQw5zXwWuGrs4Ox3xxDVEfymPv4Buu7LAChz8vwdp-2NMregfNePHoVHa9njQwayxGZNMpAVRAFnl-ceDbtivvomCyKcq_awmk9oAycRiuUdDKxi788AIlfz1R7EuKnzU5XupH98GV6U3iZQcRryO3zICNEzvWMX7j_uxIQq1i81ksmBf3unFDYabMm7rK8An2pmU75w4fCd0MAYPoILTutESnAoEsxB2dWoPO6IAT7tKesUwyX3_aKYtWiSjo7ORgK8BBmkOXr6uPGMx-Hq5ZfKjiA7yy8770gYYSgZDINaHaoBs7Qki8VuLIhHEyJLMnOOmXEgXWuhTR_gMwoKIndtm01Uatr2l15gccsy3PD_NYYDUmIRKr40Vk8j-f985Bu9hTPKezzjC5xmqU08fwYoE-2iUM2FTGxgSRtfsz6XuFIaYuukVOUWMBNq_j7tygMz8ygOj_IUvnMHUWfN3mkeBR1bkanAXT_lownSjfIc6zfGdATaXGpadzSEfLndes3SlOTwa6R3mmKu5gIIdhKjCHjhwTTBsUf12NQnPndr5TPKi9d9UYYR99rIQhoj8eUkNQxhvGuwQ0p6TyJVsp3p0YEPtjsBrID_tT_0000)
 
 ## 3. Diagram prehajanja stanj med statusi
 
-```
-ZAČETEK MESEČNEGA BATCH PROCESA (stranka X)
-│
-├── Trenutni status = OSNOVNI?
-│   └── nakup ≥ 500 EUR? ──► DA ──► STATUS = SREBRNI
-│                        └──► NE ──► ostane OSNOVNI
-│
-├── Trenutni status = SREBRNI?
-│   ├── nakup ≥ 500 EUR?
-│   │   └── DA ──► Je to že 3. mesec z nakupom > 500 EUR? ──► DA ──► STATUS = ZLATI
-│   │                                                      └──► NE ──► ostane SREBRNI
-│   └── nakup < 200 EUR?
-│       └── DA ──► Ali je to že 2. zaporedni mesec? ──► DA ──► STATUS = BRONASTI
-│                                                    └──► NE ──► ostane SREBRNI
-│
-├── Trenutni status = ZLATI?
-│   ├── nakup ≥ 500 EUR? ──► DA ──► ostane ZLATI
-│   └── nakup < 500 EUR? ──► DA ──► STATUS = SREBRNI
-│
-└── Trenutni status = BRONASTI?
-    ├── nakup < 50 EUR?  ──► DA ──► STATUS = OSNOVNI
-    └── 2 zaporedna meseca z nakupom ≥ 200 EUR? ──► DA ──► STATUS = SREBRNI
-                                                 └──► NE ──► ostane BRONASTI
-```
+![Diagram prehajanja stanj](https://vip.lavbic.net/plantuml/png/ZP7FQeD04CRlFiNS2WNR4EWbM45JAIr1GTCUOZniT4d5P5TcDT24FaBVgWzML-EVJGtqDhlxpVpc-rPaASi9aZs8WXGKJXg0JU9iYxnaoPplE1h6Ylnyqu9cfWcBTFjHF2Fvb3gE2SLQ0qy4is1NJQZVlZGjl8r0rqtm1EC7bi8CmdOCvCXZAWZSLrLwED8YhUcbY3JjfkhI8LXQxgip0ozmlNVtHTvfpOBjl5C5QMl92P1kiEOmafKvc8_mC9c0y-OhidwTHcPqgWjou3kshv1RWYItjHovgcoFSTSidDx1dWeQ4pYId2DD8gNJHiw8A8RRJF_Rs_iDHHfJ15vjoIY8vlvFagk5jHowQRQMNffgBCC-d5vppUqbp_OzrmeKP6TNKhl3jL-fXoggaIy-nmLh1cE1AUs3jDN8DkU7w1S0)
+
+> **Opomba:** Ko stranki dodeljujemo točke zvestobe, ji najprej spremenimo status, v kolikor izpolnjuje pogoje in šele potem dodelimo ustrezno število točk.
 
 ## 4. Odločilna tabel za točkovanje
 
-> **Opomba:** Točke se dodelijo šele po morebitni spremembi statusa.
-
-```
-MESEČNI ZNESEK NAKUPOV?
-│
-├── [ do 200 EUR ]
-│   │
-│   ├── STATUS = osnovni  ──► 5 točk
-│   ├── STATUS = srebrni  ──► 7,5 točke
-│   ├── STATUS = zlati    ──► 10 točk
-│   └── STATUS = bronasti ──► 0 točk
-│
-├── [ 200 EUR – 1000 EUR ]
-│   │
-│   ├── STATUS = osnovni  ──► 10 točk
-│   ├── STATUS = srebrni  ──► 15 točk
-│   ├── STATUS = zlati    ──► 20 točk
-│   └── STATUS = bronasti ──► 5 točk
-│
-└── [ nad 1000 EUR ]
-    │
-    ├── STATUS = osnovni  ──► 20 točk
-    ├── STATUS = srebrni  ──► 30 točk
-    ├── STATUS = zlati    ──► 40 točk
-    └── STATUS = bronasti ──► 10 točk
-```
+| Znesek nakupov v mesecu | Osnovni | Bronasti | Srebrni | Zlati |
+| ----------------------- | ------- | -------- | ------- | ----- |
+| **do 200 EUR**          |       5 |        0 |     7.5 |    10 |
+| **200 EUR – 1000 EUR**  |      10 |        5 |      15 |    20 |
+| **nad 1000 EUR**        |      20 |       10 |      30 |    40 |
 
 ## 5. Zaslonske maske
 
