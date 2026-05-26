@@ -36,7 +36,6 @@ Vsi API-ji v tem poglavju opisujejo komunikacijo med našim sistemom in **zunanj
 Poslovni IS Maestro je obstoječi sistem, ki hrani podatke o opravljenih nakupih strank v fizičnih in spletnih prodajalnah. Naš sistem ga kliče enkrat mesečno v sklopu batch procesa (F-09, F-10).
 
 **`GET /external/poslovni-is/api/v1/nakupi`** – Pridobitev mesečnih nakupnih podatkov za vse stranke programa lojalnosti za pretekli mesec.
-* **Query parametri:** `mesec=12&leto=2024`
 * **Response:**
 ```json
 [
@@ -147,7 +146,8 @@ Po uspešni registraciji in verifikaciji stranke naš sistem posreduje zahtevo z
 
 Mesečni batch proces (F-09) sproži sistemska ura. Gre za interno opravilo (cron job), ki se izvede enkrat mesečno po koncu obračunskega obdobja, brez zunanjega klica.
 
-**Cron izraz:** `0 2 1 * *` *(vsak 1. v mesecu ob 02:00)*
+**Cron izraz:** (vsak 1. v mesecu ob 02:00)
+
 **`POST /internal/batch/izracun-tock`** – Zažene sekvenco:
     1. Branje nakupnih podatkov iz Poslovnega IS (F-10)
     2. Posodobitev statusov strank (F-12, F-13)
