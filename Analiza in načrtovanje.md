@@ -167,15 +167,6 @@ Mesečni batch proces (F-09) sproži sistemska ura. Gre za interno opravilo (cro
 
 ### F-06 Prijava v portal
 
-**Podrobnejši opis toka:**
-
-| # | Osnovno besedilo | Podrobnejši opis |
-|---|---|---|
-| 3 | Uporabnik vnese e-naslov in geslo ter potrdi vnos. | Stran `PrijavaStran` zajame vrednosti iz obrazca in jih posreduje krmilniku `AvtentikacijaKrmilnik`. |
-| 4 | Sistem preveri, ali e-naslov obstaja in ali se geslo ujema. | `AvtentikacijaKrmilnik` pokliče metodo `preveriPoverilnice()`, ki poizveduje po entiteti `Stranka`. Geslo se primerja z atributom `geslo_hash`. |
-| 5 | Sistem ustvari JWT-žeton in vzpostavi sejo. | `AvtentikacijaKrmilnik` pokliče `ustvariJwtZeton()`, ki vrne podpisani žeton z `ID_stranke`, in `vzpostaviSejo()`, ki žeton shrani na odjemalcu. |
-| S2 | Sistem prikaže splošno sporočilo o napaki. | `AvtentikacijaKrmilnik` vrne kodo napake, `PrijavaStran` pokliče `prikaziNapako()`. Napaka ne razkrije, ali je bil neveljaven e-naslov ali geslo. |
-
 **Razredni diagram:**
 
 ![RD](https://vip.lavbic.net/plantuml/png/XPDFQzmm4CNl_XGYlJYa6xRGKbZIXPJ-ImljWY67NXPP6c_6bZL6ajNMfT-zOpcxiUb2Bx9v6h_H-sdi6xITTB8LoaZlRqDmMFO1xXJP0WSGwymlIpwG3KNuPK2KP7IM9L7i7DOooY8uQSNDJGkrnUrMF5DGLUgr-9q9iH8TcHhUjnBDHd0bsiEJ_16yeRcyukLAT0uREU2tqia1L7wv4P5GJriKdCPxItufJrzybPriAFSTELBuPBqiXTwtuBXO3-GixGnvHIUxFyTqjp603UohEEKNrwAns73CXbauCbFKSgrVLjLZr5R-B094RhmZt_IUuaQW3UADU3KF1v6xxsXSsKL13dCwpyLXfF99-eVPyKiY0z8cXzw7A1r-_X6-Go2Requtq43gTZdZUINYq94FCc81DUN3M7yEoY1BC33WMmU39W-7vPd-OJCrb4nZH1GWJ3IggjIbVgHnzsxlP-TA6hQmd0A7B3KB3VPMCe2u41EJ_SCCIf8vMkZzVaHPJJS5v_O3gUPqYCKrf0dC_qUyXllKGI7doMUR36Jn4roykE06s_GyFpyR7c7lGFSryDjf1hBprIU_zVKrlnwnZoOunAEBWDM4hC_-0W00)
@@ -186,39 +177,20 @@ Mesečni batch proces (F-09) sproži sistemska ura. Gre za interno opravilo (cro
 
 ### F-18 Pregled kataloga nagrad
 
-**Podrobnejši opis toka:**
-
-| # | Osnovno besedilo | Podrobnejši opis |
-|---|---|---|
-| 2 | Sistem pridobi seznam aktivnih nagrad. | `KatalogKrmilnik` pokliče metodo `pridobiAktivneNagrade()`, ki vrne vse zapise iz entitete `Nagrada` s `status_nagrade = 'aktivna'`. |
-| 3 | Sistem prikaže katalog nagrad z nazivom in ceno v točkah. | `KatalogStran` iterira po vrnjeni listi objektov `Nagrada` in za vsako prikaže `naziv`, `opis` ter `cena_v_tockah`. |
-| 4 | Sistem prikaže, ali ima uporabnik dovolj točk. | `KatalogKrmilnik` primerja `cena_v_tockah` vsake nagrade z atributom `status_tock` entitete `Stranka` in nastavi zastavico `jeDosegljiva`. |
-| S2 | Ni aktivnih nagrad v katalogu. | `KatalogKrmilnik` vrne prazno listo, `KatalogStran` pokliče `prikaziPraznoStanje()`. |
-
 **Razredni diagram:**
 
 ![RD](https://vip.lavbic.net/plantuml/png/XPFRYjim48Rl_HGYlKaFkwHGA9Wbi10AIzeGIAzwOyRME3kMB1bfrj2KFaBVgWzMMNASEANqne8vwVz-ZRqYqu63LbGQl7zaTbI-C3vLrXpeX6AL-Nd99slumDyrYj9gcMKnABR0eEtnm0wCU7XeiJ6qNejN5TPrzL7yo8Iu4nvF1jeT71t8N7mcpqFuBdpUYiwHWXEDSvOc5c6gUfsBtfACTJQCKB2n7e-weHwN9EEbAjIIcPME8_SEJiOU64o3otaUIT8EjjQHht18azoTBxuQzlE6SkjQqePK05N13MTrWYrNyaDT9zY9IjgI7XLJRt2SFOWOuQE87XrDGDRpacsbS6_POMcIadSYncv8IsirWZdVr3deTOFc6-mZ-T_MV87k0fFKG810myJ82QAkIrdAySMUDeMvCYJ6JF2qpqKOJUOO8xOZFmi4Cw7eYq4pF5ywFGE_-Cl4gmuPCctHeswWDy43AcnOaGqmNiniCFa8ools2IUX_XV7NpaIOzJEbGGZGqZDOgFmWMTgJ9gEo5-7bnaa3OaWP_OhBDulGkawdhVRauiJF3Fs85JAPBSLK_Vg_lxDOdgnG8yE1QIj4gEV_-uEvzcT_BoI0rFO-B1Nlt-fx0y0)
 
 **Diagram Zaporedja:**
 
-![Diagram Zaporedja](https://vip.lavbic.net/plantuml/png/pLJ1Qjj04BtlLmp99O4qb58eXDYGKkZ1RGWekHH365bZPQtrZhgxKgZ-eH_HSp-Xa4De_gkpArkHKqElzKdMlZVpvhrP-KhR6XskmTFNXko2FfFtMDA5qQM51Tb0Jla1vSZNRFqMzPuCtryun_SGN4DAuIAmWuChfrVOcXLPQ6fsc5jT7G1wk54vDxP0zmqEPXZGS9a5XtPkpy_NjB9wEasuMGQ72rek5-_KWcrmR0RypAsraNgHKlLdpxGP7EQlYxVBfHBbEaYNIomT5XZHwHM50Nq9XyjbNkJ504vQghtWR02hoGG-6cojXi0LJ2PAtS2hQTHy1hhBoH4ux0eoLC56DDWa8_gZMmmaOAM446apeTLErwvtx0kAUnLsHxhevT3nY3OJscnCApZN5vKSM-f7fQDZPLcmJfTtGLtr46Wz0VQuZHXIkeCSEuAQ2mmLj-930P7RDzbs-QHzED_uEDtsZyEM5AvvKSMEWy9CPSzC7p0q_ZO8I1KqmYZ3N4E78WihtWXY1VBR6OzQSle3UohDIhVimz5STjJYRPkAujt9tCO76goI4PxLHv6jauazTLRMj-ypjnsm_9V6nQYq7ajCHcT3h7MAH6_IFDeOUDnZ17IpnJmz45GxcS-jm3lTdi1BuKa3xcgGabm7uD9G4NDndDluViWiMlJNkjNiSIqZld1oZxPz9PDbuzcpjEF9KhdwQSkpDsTmgUDUrspuwI7grNUR4l_b7TXP0YaiPeEHJSP_ntmLqPm5jAjKQNIT7dzTEx9D4AlRRT0DMAtsEtCgzo_ji1IGaYr2jKRJd3x-7D-rFJbntf9aP7ZdEEtoy4MLxvJCPB7es8cUMhh_-FsTNsRv1m00)
+![Diagram Zaporedja](https://vip.lavbic.net/plantuml/png/pLJ1Qjj04BtlLmp9nO4qb58eXDYGKkZ1D0IKN8eXZAonijPwHzrTALJ_q8_ekPzGo24q_zNPbQtAgQ7N-YHhtxnvy-QjVALjZGutuEbBGtP9dyXxBEdIwDB2acmWf_o0SkHhjdw7Ua-67owTumS8hY6bS1dOmT6rqsjipPeiD3KxpAskZW0ztAgS6rkW-mf7SmnekCo2Gxkm5nSRMbizcoNSF8FZ9QrMotTgoJOuDWD-xZRQ25yigVgpFsLpECvV5szNAoNATP0kLrWwB32YqoiA0_eAZbUhlCYB0PoqL0V1sG1MqobyDDXQ3O4hc4wLkeLNiwZv77INaoDms1Lag8AjQB19HlH7jnX8m4f9GIoRIrdjTErwnpwZk5TXDz55BuTEHcLpAPkFomhEzMKbnvRwKMboeYmBrkdoFgZh7WAj9y0UjnL3IdUGOqTGSu6XubPyA23Mxfh4YKeADxoi8kqW8rCYVIV21moDlmi2KWMDCCemrz2XzCQAjrrPWVpsPg2MdFx0dagprYtxC5b842tUjOaKxqyNDZxGu8Vex2NkR6-TZEMfivBHli_2Ti3oNneN8sezbfZSp8RTrSbtlLtPPElIIOyHqEqEy_n8KEqjTc45tkds55uAJnfmNuDGSXs0IqD5DDznRkFxOJ7HehyoLRF7ZOpumia3sWvH9il6isSfoCbIkTyfojcRSxZICRmr6tv-Z7hr_PRYlmpwNWY4MCm6eoMH_rxpTKHp5j2k4zFepZpzl75aco1Mjxj5Ds2rEkpCcLoob64X4CeMeTgWQSwUVemlr84zSTwIxCZmtd7Ayl3Pb8-Hp6InwDY9dbgwV__rZL_kyZS0)
 
 ### F-20 Pregled statusov strank
 
-**Podrobnejši opis toka:**
-
-| # | Osnovno besedilo | Podrobnejši opis |
-|---|---|---|
-| 2 | Sistem prikaže filter za obdobje in status. | `StatusAdminStran` prikaži obrazec z datumskima poljema `datumOd` in `datumDo` ter spustnim menijem za `naziv_statusa`. |
-| 3 | Administrator vnese parametre in potrdi iskanje. | `StatusAdminStran` posreduje filter objektu `StatusKrmilnik` prek metode `isciStatuse()`. |
-| 4 | Sistem poizve po zgodovini statusov. | `StatusKrmilnik` pokliče `filtrirajPoObdobju()` na entiteti `Zgodovina_statusa`, ki vrne zapise, ki ustrezajo podanemu obdobju in statusu. |
-| 5 | Sistem prikaže seznam strank s podatki o statusu. | `StatusAdminStran` prikaže kombinirane podatke iz `Stranka` (ime, priimek) in `Zgodovina_statusa` (naziv_statusa, datum_od, datum_do). |
-| S2 | Ni zadetkov za izbrano obdobje. | `StatusKrmilnik` vrne prazno listo, `StatusAdminStran` pokliče `prikaziPraznoStanje()` in ohrani vrednosti filtrov. |
-
 **Razredni diagram:**
 
-![RD](https://vip.lavbic.net/plantuml/png/XLDTQzim57tthn3fYxkb9ME3WYc1G2YO5XeMs4DVWcnTXslBka6I3VFOVvzisOwTXFN57rVt79rpT6KAL2UkUSbIoOtPMAingIp4AQazDi1MWPctl92oU_jR0aj8YY3eYcnlkQtCHfIezbPpnPwVIyWLhjUCtQMGPUaJ-nCmzi0ob1RqrhMNxo9YxWCkwrkwgdl-oEsZKHtRXGVt-CfE6WlUu4lN5Dv7h2OKVeMi5XYRWgiSvYiUynEQIZfQ27N_XH5xGsDlzEuqRnGv4PTSsDJKO9YHBhaTv0qDV-VflEeIfSB2PLEu43N9Bf-xP2L-P9cFnxj2awB7G2YcIIsPc0QqP6QMoxqtq74qGbVDZbn_0Q5fpwG0lxnapP44rQXWD3p2dE6JvhNCGNtmk7KNdZeI7C1NNbtuCFNQRiMTIL0MBLXlCiiIaOX-1kBjOLI4odOrB65wlAqGLofcDJWeRYJLisANo4734LlE57CuJu-FymXsvyAckEmEhyUEYZ_wDFZ1f_cfzabyWthbXgGUy3VaqNJKVKbCfxm40-cPJeAbyS-Ro65JMAn1_NfF12Lv5T9vA7egPouXai1Lw-xgJYw-BHpRkdjVZ6JaxelH8AeS-XiNN7ICuDNZuvV5ZT2Y3gXHSyV5o8lyX6KO5gSRD30oa2XWVk0W65Ozw7yxOyc_1_y0)
+![RD](https://vip.lavbic.net/plantuml/png/XLF1Yjim4BtxAuRinTlDBYaK2cO9B8I5i8KkpMqlOMoDqubjAKYAeIxzc7vC_wjZAqxi9ErUB7aqy_JcpPChME_GOWLPYSuzUMyvtNjQPaQlk26OHMwSycoqN_aV9K5gIXL5NH1M7ltUFQcAzSfRrF3uMD5MytmES9DHdcUVuMS4S0yvbvxiGjAhhoe1sT1vV64kuW4_aNiiwqrxS2-VEzXPBh3XvouflasWDgp2YV5MyT8LgBSqFWartwZPbm9BiJtiE84lxFoLt5UBZJP2uXoBczeq7EV6LkXxUdt2hx4wBxRYKdCXsXGYeZLbfyzDEbEVyZp84xfYbt6eeLWDbPg26Weq1JVIvJOqq3FVMQpBBUatNBOquvsHwkBGvHGkI8kAD2GjSonGs9BsxCa7jdcUgbGTXhbSh5sNHWcmzbsCAnhEgIKYeM8KexL6Lvfw5EnQMrlQS8kPyPPEDWYwRCY_YcfcMNLJEDGU6RzjZ38rQrm7MTxbtXmA1korJBlkww_GCqFFXf0QshKYHza9hYHlZd-XYRrqHms-ME5bfSagDgVf_dkmgJ4beMwxlNXiauyJGPztwvdN4jW76w2ugdiBqLd6iNZsyF1XSaN4f7k3bYr2Wpjs1BLiTC7l8FK6IbeBA9DoZH0iI0SHD7-7u9-eJmuO_oCZzslK-EStoXhz1G00)
 
 **Diagram Zaporedja:**
 
-![Diagram Zaporedja](https://vip.lavbic.net/plantuml/png/rLNDYkD64BxhAOhPYmtE4a8WiCmCE2mBWvECYI47OnXQxhAdBAbBwMvfYTuXJv972EnXsNslLBT-B8qzaElwOjdzVLLVVLrLSXcPKbbLWCC_ApHx_1MTKqTSvdGqi4VZqIPkG5bq9HlNetx6d3ykhUMFu6s5IQBsdYtSB7L1XfotIdxUW7AmJ5AkZ5RsBxZPUEKh5p4RWPYTkRqjy6Je_ZvYDyiDlDdZuR3_ATcpyPRpdhIo1UM6ia39sgCpRGLlqk_rZuT38hB9IwRjaJNNPDIJYtGLUF4G_S3RIhR38TMf7dXHLdOLVGOdTtVmw0pNXi1p1dTtIRA4x-wZ_dT0JOeMmQf6OuuPj0KGk1WxE4MryXZGIH8e0xEqbAc6Fb0kvi_cxQ6SBlkphvyG3l4KPbgY5ezw0V7XFI_02BVk2vvFDDK67GAdcjCJ0XdWSaydkTu-NCU2y5oojvfUI8l_FRXCcHEAjE5q5IfsUsghn2kosj3pKU4heQy2Unj21mMMh3gj-J4AhFvFaEqcsMw662TSPdA0vey-10SspnF30hPqVFRYWZK8ZIh9uGAazagk11jrufqfMIk3HTLvL0MFsfnLpDEN6aFy8Xr-Uz5Yzud6iRoknY0lDWGxJ8KSClaCOLOoFBn_Qhi2n_OacvvtHB-MHkU78dX-LKRNiPFavzm1ssXRDUiswwnBju2cauzJYmBuwoS2AWGZFIVVcNGq38FHJDkikw8diNjdsaVDWN1XJwlft95z1R9QcYeN3DUJ6bRNX-Ft3espdaUl38h3neJz5fNlp6nSKjzG8_dGgvVcvjB3P9M1p2yVSzGgt9_brB3p12eNfvgQ6-glDG7vZ0QlKSyUQzMYO7PWMoW_ZwZn18ciqgewFw7PgeU0dRK1QG5ZpjYU6EF2KbaUhOYfbqF2mIMCAo7e4hCCX_Ab3pAMNIWhRimEUqfMNco1i3B2pjlyy0v-8obFey-ubeUmzmJ0mvPviHOlLb2tUKORPvBocrW_atcK6soa_boQXg_jWkb5lOP-hV7N4IzrjWwCX_RplzjB-ytvTjxkp9fT9YyXuJGW8tvKN_usLD2kVRsZE20s1dVLsy__N9ydJckKfizP9fsV9HT98QZRIOWkoWI_R9p_0000)
+![Diagram Zaporedja](https://vip.lavbic.net/plantuml/png/vLJ1Yjim4BtxAuRTInPIwA5GM3OBAQMmfEqkpIq45jaQfufjZIifMkf_w2_rrFvNHrBiEDbiwRqv97OqJ_FcpRonbTAjCA81Yzzsg0lyXDQA3SvhjT5Ge7PeCZj46RGjQTj7lSEQdkR6q1CuiyCi4uKZ0nTpsIYjh3E2Noz0M9XdEUsq5EOxN2oTS3iROvOSejVwvgR1hLQtjp5sEL_2PO5bMRpD2jBEKDs35gPHjLPLW5Jfw01Rm6N-MhufounfAyUPLXkIv9KMZpR2HS35GtG3RiNPoZANkHnmaLPrDleGdCrcS6yrUQt0KGMpMPRDuTLjv7yDgilH81ZHIQonWbI00Xll3aefBno6w2mBa07P6bM9JdrGDOi_kKg7V3hlptx_H2ZZAKmatzhSood4X_Sq1SrOtnTyTSJ9QxG8b4lAjmXA0xM5sd9x--lsA0ZFBJaZrGcr-D-ThOJU8bCRJXUXObkeL2MUePMklXeLliYocgY5Je2tekBVLbdmyAnh6V27Kt2YLM2nOmsn4ml3dJ5gYyrVqWNea7ArZE-hf6SaxOr6o8bg53eUIZmDZr_KElZr0v_dvhwduOVz9n4DF3Ve7dX0wQu9MlNd1m4Ea1C-gedTuMRpKpM4ZQWTi9hubJmtRBcuXjuW84aARXVhKU5QU_PtfwE1krtDqf2F5w0EGy-p74WVnYHm-CZ-7OUFao_EJ-oNVJHEUfnwONhtR98Nrdh2PKxxSllUxPlvI7rR7oNnn8L67EqNO5FHfiPKhw5SatKAHAtOWvuwrSiGAnwveHDV7NgHec1Iacc4ItqQZpNJQetmzHRrIjo5s4cwK4rXZ1dBqy_1iQJiQ3oTiJxuI2MCFWsyM2nDeNpkSaMfLsDqM1uyW75X1H_p8hg6pufha-Wgyi5Sl8dub0RV1sMInASxwzb-sA-5qJeuIlq_x8PIr1RFR8ONRCEZqh7MDKyd_Ojd7c8yIvD4E-iMoZtoIDSqNMlwohrKd0jbclFG8iF-F1sBFm00)
